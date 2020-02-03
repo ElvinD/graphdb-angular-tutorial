@@ -1,1 +1,8 @@
-<p>province-list works!</p>
+<div><span class="title">Provinces</span></div>
+<div> 
+  <ul>
+    <li *ngFor="let province of provinces">
+     <span>{{province.label}}</span>
+    </li>
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpParams  } from '@angular/common/http';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { catchError, tap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -26,8 +26,8 @@ export class SparqlService {
 
   getRDF(query: string): Observable<any[]> {
     const params = new HttpParams()
-    .set('query', query)
-    .set('format', 'json');
+      .set('query', query)
+      .set('format', 'json');
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ export class SparqlService {
     return this.http.get<any>(this.serviceURL, options).pipe(
       catchError(this.handleError('getRDF', []))
     );
-   }
+  }
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
@@ -49,7 +49,78 @@ export class SparqlService {
     };
   }
 
-   private log(message: string, data?: any) {
+  private log(message: string, data?: any) {
     console.log(`SparqlService: ${message}`, data);
   }
+
+  protected parseResults(results: any): Array<RDFData> {
+    // console.log ('results: ', results);
+    let resultData: any;
+    const tempDict: { [uri: string]: RDFData } = {};
+    const itemsDict: { [uri: string]: RDFData } = {};
+    const items: RDFData[] = [];
+    let rdfdata: RDFData;
+    let key: string;
+    let label: string;
+    let hits: number;
+    let type: string;
+    for (let i = 0; i < results['results']['bindings'].length; i++) {
+      resultData = results['results']['bindings'][i];
+      key = resultData['uri'] ? resultData['uri']['value'] : null;
+      label = resultData['label'] ? resultData['label']['value'] : null;
+      hits = resultData['hits'] ? resultData['hits']['value'] : null;
+      type = resultData['type'] ? resultData['type']['value'] : null;
+      if (null == tempDict[key]) {
+        rdfdata = new RDFData();
+        tempDict[key] = rdfdata;
+      } else {
+        rdfdata = tempDict[key];
+      }
+      rdfdata.uri = key;
+      rdfdata.hits = hits;
+      rdfdata.label = label;
+      rdfdata.type = type;
+      if (rdfdata.label && rdfdata.label !== '') {
+        if (itemsDict[rdfdata.uri] == null) {
+          itemsDict[rdfdata.uri] = rdfdata;
+          items.push(rdfdata);
+        } else {
+          // console.log('Duplicate item found: ', itemdata);
+        }
+      } else {
+        // console.log('Item without a name found: ', itemdata);
+      }
+    }
+    return items;
+  }
+
+
+  getProvinces() {
+    let query = `
+        ${SparqlService.PREFIXES}
+        select ?uri ?label ?type (count(?residents) as ?hits)  where {
+        ?uri dct:type hg:Province ;
+        rdf:type ?type ;
+        rdfs:label ?label .
+        ?place hg:liesIn ?uri .
+        ?residents dbo:residence ?place
+        }
+        group by ?uri ?label ?type
+        order by desc(?hits)`;
+    
+    return this.getRDF(query).pipe(
+      map (res => {
+        return this.parseResults(res);
+      }));
+    }    
+}
+
+export class RDFData {
+  label: string;
+  uri: string;
+  type: string;
+  template: string;
+  templateRole: string;
+  hits?: number;
+  selected = false;
 }

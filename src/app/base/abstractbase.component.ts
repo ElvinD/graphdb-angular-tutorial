@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SparqlService } from 'src/app/service/sparqlservice.service';
+import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
 
 @Component({
   selector: 'app-list',
@@ -10,10 +10,14 @@ import { SparqlService } from 'src/app/service/sparqlservice.service';
 export class AbstractBaseComponent implements OnInit {
 
   @Input() dataChanged: Observable<any>;
-
+  
   constructor(protected sparqlService: SparqlService) { }
 
   ngOnInit() {
+  }
+
+  onClick(item: RDFData): void {
+   
   }
 
 }
