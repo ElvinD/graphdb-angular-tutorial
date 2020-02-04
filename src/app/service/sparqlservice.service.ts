@@ -54,7 +54,7 @@ export class SparqlService {
   }
 
   protected parseResults(results: any): Array<RDFData> {
-    // console.log ('results: ', results);
+
     let resultData: any;
     const tempDict: { [uri: string]: RDFData } = {};
     const itemsDict: { [uri: string]: RDFData } = {};
@@ -107,12 +107,31 @@ export class SparqlService {
         }
         group by ?uri ?label ?type
         order by desc(?hits)`;
-    
+
     return this.getRDF(query).pipe(
-      map (res => {
+      map(res => {
         return this.parseResults(res);
       }));
-    }    
+  }
+
+  getPlaces(provinces: RDFData[]) {
+    let query = `
+          ${SparqlService.PREFIXES}
+          select distinct ?uri ?name (count(?residents) as ?hits) ?province where {
+            ?uri dct:type hg:Place ;
+            rdfs:label ?name .
+            ?residents dbo:residence ?uri .
+            ${provinces.map(province => `?uri hg:liesIn <${province.uri}> .`).join(' ')}
+            ?uri hg:liesIn ?province
+          }
+          group by ?uri ?name ?province
+          order by desc(?hits)`;
+
+    return this.getRDF(query).pipe(
+      map(res => {
+        return this.parseResults(res);
+      }));
+  }
 }
 
 export class RDFData {

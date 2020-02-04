@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
 
@@ -10,6 +10,8 @@ import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
 export class AbstractBaseComponent implements OnInit {
 
   @Input() dataChanged: Observable<any>;
+  @Output() select: EventEmitter<RDFData[]> = new EventEmitter();
+
   
   constructor(protected sparqlService: SparqlService) { }
 
@@ -17,7 +19,9 @@ export class AbstractBaseComponent implements OnInit {
   }
 
   onClick(item: RDFData): void {
-   
+  }
+
+  private emitSelection(): void {
   }
 
 }
