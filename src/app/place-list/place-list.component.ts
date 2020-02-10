@@ -16,7 +16,7 @@ export class PlaceListComponent extends AbstractBaseComponent implements OnInit 
     super(sparqlService, selectedItemsService);
   }
 
-  ngOnInit() {
+  ngAfterContentInit() {
     this.selectedItemsService.$selectedItems.subscribe((items) => {
       this.onItemSelected(items);  
     }, () => {
@@ -25,21 +25,30 @@ export class PlaceListComponent extends AbstractBaseComponent implements OnInit 
       console.log("completed selecting items for places");    
     })
   }
+
+  ngOnInit() {
+  }
   
   protected onItemSelected(selectedProvinces: RDFData[]): void {
-    this.sparqlService.getPlaces(selectedProvinces).subscribe((data) => {
-      this.onPlacesLoaded(data);
-    }, () => {
-      console.log("error loading places");
-    }, () => {
-      console.log("completed loading places");
-    });
+    if (selectedProvinces.length > 0) {
+      this.sparqlService.getPlaces(selectedProvinces).subscribe((data) => {
+        this.onPlacesLoaded(data);
+      }, () => {
+        console.log("error loading places");
+      }, () => {
+        // console.log("completed loading places");
+      });
+    }
     
   }
   
   onPlacesLoaded(data: Array<RDFData>): void {
     this.places = data;
-    console.log("received places: " , this.places);
+    // console.log("received places: " , this.places);
+  }
+
+  resetItemsStatus():void {
+    this.places.map(place => place.selected = false);
   }
 
 }

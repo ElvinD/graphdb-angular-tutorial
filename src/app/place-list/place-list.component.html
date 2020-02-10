@@ -1,7 +1,7 @@
 <div><span class="title">Places</span></div>
 <div> 
   <ul>
-    <li *ngFor="let place of places">
+    <li *ngFor="let place of places" [class.selected]="place.selected === true">
       <span class="item"
       (click)="onClick(place);">{{ place.label }}</span>
       <span *ngIf="places.hits" class="badge">{{ places.hits }}</span>

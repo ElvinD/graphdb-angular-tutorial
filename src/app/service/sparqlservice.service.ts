@@ -64,12 +64,14 @@ export class SparqlService {
     let label: string;
     let hits: number;
     let type: string;
+    let dctype: string;
     for (let i = 0; i < results['results']['bindings'].length; i++) {
       resultData = results['results']['bindings'][i];
       key = resultData['uri'] ? resultData['uri']['value'] : null;
       label = resultData['label'] ? resultData['label']['value'] : null;
       hits = resultData['hits'] ? resultData['hits']['value'] : null;
       type = resultData['type'] ? resultData['type']['value'] : null;
+      dctype = resultData['dctype'] ? resultData['dctype']['value'] : null;
       if (null == tempDict[key]) {
         rdfdata = new RDFData();
         tempDict[key] = rdfdata;
@@ -80,6 +82,7 @@ export class SparqlService {
       rdfdata.hits = hits;
       rdfdata.label = label;
       rdfdata.type = type;
+      rdfdata.dctype = dctype;
       if (rdfdata.label && rdfdata.label !== '') {
         if (itemsDict[rdfdata.uri] == null) {
           itemsDict[rdfdata.uri] = rdfdata;
@@ -91,8 +94,7 @@ export class SparqlService {
         // console.log('Item without a name found: ', itemdata);
       }
     }
-    console.log("results from loading: ", results);
-    console.log(" items returned from parsing: ", items);
+    // console.log("results from loading: ", results);
     return items;
   }
 
@@ -100,16 +102,16 @@ export class SparqlService {
   getProvinces() {
     let query = `
         ${SparqlService.PREFIXES}
-        select ?uri ?label ?type (count(?residents) as ?hits)  where {
+        select ?uri ?label ?type (count(?residents) as ?hits) ?dctype  where {
         ?uri dct:type hg:Province ;
+        dct:type ?dctype ;
         rdf:type ?type ;
         rdfs:label ?label .
         ?place hg:liesIn ?uri .
         ?residents dbo:residence ?place
         }
-        group by ?uri ?label ?type
-        order by desc(?hits)`;
-
+        group by ?uri ?label ?type ?dctype
+        order by asc(?hits)`;
     return this.getRDF(query).pipe(
       map(res => {
         return this.parseResults(res);
@@ -119,14 +121,16 @@ export class SparqlService {
   getPlaces(provinces: RDFData[]) {
     let query = `
           ${SparqlService.PREFIXES}
-          select distinct ?uri ?label (count(?residents) as ?hits) ?province where {
+          select distinct ?uri ?label ?type (count(?residents) as ?hits) ?province ?dctype where {
             ?uri dct:type hg:Place ;
+            rdf:type ?type ;
+            dct:type ?dctype ;
             rdfs:label ?label .
             ?residents dbo:residence ?uri .
             ${provinces.map(province => `?uri hg:liesIn <${province.uri}> .`).join(' ')}
             
           }
-          group by ?uri ?label ?type ?province
+          group by ?uri ?label ?type ?province ?dctype
           order by asc(?uri)`;
 // console.log('places query: ', query);
     return this.getRDF(query).pipe(
@@ -140,6 +144,7 @@ export class RDFData {
   label: string;
   uri: string;
   type: string;
+  dctype: string;
   template: string;
   templateRole: string;
   hits?: number;

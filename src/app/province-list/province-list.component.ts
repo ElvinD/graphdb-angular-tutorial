@@ -20,23 +20,32 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
     this.selectedItemsService.$selectedItems.subscribe(items => {
       this.onItemSelected(items);
     })
-    this.sparqlService.getProvinces().subscribe((data) => {
+    const p = this.sparqlService.getProvinces().subscribe((data) => {
       this.onProvincesLoaded(data);
     }, () => {
-      console.log("error loading provinces");
+      // console.log("error loading provinces");
+      p.unsubscribe();
     }, () => {
-      console.log("completed loading provinces");
+      // console.log("completed loading provinces");
+      p.unsubscribe();
     });
   }
   
   onProvincesLoaded(data: Array<RDFData>): void {
     this.provinces = data;
-    console.log("received provinces: " , this.provinces);
-    
+    // console.log("received provinces: " , this.provinces);
+    // choose a default province to start loading places & people
+    if (this.provinces.length > 0) {
+      this.onClick(this.provinces[0]);
+    } 
   }
 
   protected onItemSelected(items:RDFData[]):void {
     console.log("provinces component. Items selected: ", items);
+  }
+
+  resetItemsStatus():void {
+    // this.provinces.map(province => province.selected = false);
   }
 
 }

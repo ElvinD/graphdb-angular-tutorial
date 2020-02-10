@@ -23,7 +23,11 @@ export class AbstractBaseComponent implements OnInit {
   }
 
   onClick(item: RDFData): void {
+    this.resetItemsStatus();
     this.selectedItemsService.addSelectedItem(item);
+  }
+  resetItemsStatus():void {
+
   }
 
   private emitSelection(): void {
