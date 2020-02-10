@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AbstractBaseComponent } from 'src/app/base/abstractbase.component';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
+import { SelecteditemsService } from '../service/selecteditems.service';
 
 @Component({
   selector: 'app-place-list',
@@ -11,14 +12,21 @@ export class PlaceListComponent extends AbstractBaseComponent implements OnInit 
 
   @Input() places: RDFData[];
   
-  constructor(protected sparqlService: SparqlService) {
-    super(sparqlService);
+  constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
+    super(sparqlService, selectedItemsService);
   }
 
   ngOnInit() {
+    this.selectedItemsService.$selectedItems.subscribe((items) => {
+      this.onItemSelected(items);  
+    }, () => {
+      console.log("error selecting places");
+    }, () => {
+      console.log("completed selecting items for places");    
+    })
   }
   
-  onSelect(selectedProvinces: RDFData[]): void {
+  protected onItemSelected(selectedProvinces: RDFData[]): void {
     this.sparqlService.getPlaces(selectedProvinces).subscribe((data) => {
       this.onPlacesLoaded(data);
     }, () => {

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
+import { SelecteditemsService } from '../service/selecteditems.service';
 
 @Component({
   selector: 'app-list',
@@ -13,12 +14,16 @@ export class AbstractBaseComponent implements OnInit {
   @Output() select: EventEmitter<RDFData[]> = new EventEmitter();
 
   
-  constructor(protected sparqlService: SparqlService) { }
+  constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) { }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  protected onItemSelected(items:RDFData[]):void {
+    console.log("abstract component. Items selected: ", items);
   }
 
   onClick(item: RDFData): void {
+    this.selectedItemsService.addSelectedItem(item);
   }
 
   private emitSelection(): void {

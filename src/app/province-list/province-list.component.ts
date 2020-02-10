@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { AbstractBaseComponent } from 'src/app/base/abstractbase.component';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
+import { SelecteditemsService } from '../service/selecteditems.service';
 
 @Component({
   selector: 'app-province-list',
@@ -11,11 +12,14 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
 
   @Input() provinces: RDFData[];
   
-  constructor(protected sparqlService: SparqlService) {
-    super(sparqlService);
+  constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
+    super(sparqlService, selectedItemsService);
   }
 
   ngOnInit() {
+    this.selectedItemsService.$selectedItems.subscribe(items => {
+      this.onItemSelected(items);
+    })
     this.sparqlService.getProvinces().subscribe((data) => {
       this.onProvincesLoaded(data);
     }, () => {
@@ -27,7 +31,12 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
   
   onProvincesLoaded(data: Array<RDFData>): void {
     this.provinces = data;
-    console.log("received: " , this.provinces);
+    console.log("received provinces: " , this.provinces);
+    
+  }
+
+  protected onItemSelected(items:RDFData[]):void {
+    console.log("provinces component. Items selected: ", items);
   }
 
 }

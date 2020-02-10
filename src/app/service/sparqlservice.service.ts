@@ -91,6 +91,8 @@ export class SparqlService {
         // console.log('Item without a name found: ', itemdata);
       }
     }
+    console.log("results from loading: ", results);
+    console.log(" items returned from parsing: ", items);
     return items;
   }
 
@@ -117,16 +119,16 @@ export class SparqlService {
   getPlaces(provinces: RDFData[]) {
     let query = `
           ${SparqlService.PREFIXES}
-          select distinct ?uri ?name (count(?residents) as ?hits) ?province where {
+          select distinct ?uri ?label (count(?residents) as ?hits) ?province where {
             ?uri dct:type hg:Place ;
-            rdfs:label ?name .
+            rdfs:label ?label .
             ?residents dbo:residence ?uri .
             ${provinces.map(province => `?uri hg:liesIn <${province.uri}> .`).join(' ')}
-            ?uri hg:liesIn ?province
+            
           }
-          group by ?uri ?name ?province
-          order by desc(?hits)`;
-
+          group by ?uri ?label ?type ?province
+          order by asc(?uri)`;
+// console.log('places query: ', query);
     return this.getRDF(query).pipe(
       map(res => {
         return this.parseResults(res);

@@ -2,7 +2,9 @@
 <div> 
   <ul>
     <li *ngFor="let province of provinces">
-     <span>{{province.label}}</span>
+      <span class="item"
+      (click)="onClick(province);">{{ province.label }}</span>
+      <span *ngIf="province.hits" class="badge">{{ province.hits }}</span>
     </li>
   </ul>
 </div>
