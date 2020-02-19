@@ -30,6 +30,86 @@ h1 {
 
    /* required styles */
 
+   .selected {
+    background-color: darkorange !important;
+    color: white;
+  }
+  .list ul {
+    margin: 0 0 2em 0;
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+  }
+
+  .title {
+    font-weight: bold;
+    color: black;
+    margin-left: 1em;
+  }
+
+  .person  {
+    width:100%;
+  }
+
+  .list {
+    max-height: 100%;
+    width: 100%;
+    display: inline-block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    vertical-align: top;
+  }
+
+  .list span {
+    margin-left: 0.5em;
+    color: #464646;
+  }
+
+  span {
+    margin-left: 0.5em;
+  }
+
+  .list li {
+    cursor: pointer;
+    position: relative;
+    left: 0;
+    margin: .5em;
+    padding: .3em 0;
+    height: 1.2em;
+    border-radius: 4px;
+    background-color: lightgrey;
+  }
+
+  .list li.selected span {
+    color:white;
+    font-weight: bold;
+  }
+  .list li.selected:hover {
+    background-color: darkorange !important;
+    color: white;
+  }
+  .list li:hover {
+    color: #607D8B;
+    background-color: #DDD;
+    left: .1em;
+  }
+  .list .text {
+    position: relative;
+    top: -3px;
+  }
+  .list .badge {
+    font-size: small;
+    color: white;
+    padding: 0em 0.2em 0em 5em;
+    background-color:rgba(114, 116, 130, 0.52); 
+    /* position: relative;
+    right: 0;
+    float: right;
+    top: -4px;
+    height: 1.2em; */
+    border-radius: 4px; 
+  }
+
 .leaflet-pane,
 .leaflet-tile,
 .leaflet-marker-icon,

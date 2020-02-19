@@ -1,1 +1,9 @@
-<p>person-list works!</p>
+<div><span class="title">People</span></div>
+<div class="list"> 
+  <ul>
+    <li *ngFor="let person of people" [class.selected]="person.selected === true">
+      <span class="item" title="{{ person.uri }}"
+      (click)="onClick(person);">{{ person.label }}</span>
+    </li>
+  </ul>
+</div>

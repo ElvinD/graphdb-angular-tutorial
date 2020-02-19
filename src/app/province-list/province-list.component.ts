@@ -40,12 +40,16 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
     } 
   }
 
+  onClick(item: RDFData): void {
+    console.log("click from: ", this);
+    if (!this.selectedItemsService.isItemSelected(item) && this.sparqlService.itemsContainProvinces([item])) {
+      this.selectedItemsService.resetPlaces();
+      // console.log("resetting places");
+    }
+    this.selectedItemsService.addSelectedItem(item);
+  }
+
   protected onItemSelected(items:RDFData[]):void {
     console.log("provinces component. Items selected: ", items);
   }
-
-  resetItemsStatus():void {
-    // this.provinces.map(province => province.selected = false);
-  }
-
 }

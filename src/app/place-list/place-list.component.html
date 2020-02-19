@@ -1,8 +1,8 @@
 <div><span class="title">Places</span></div>
-<div> 
+<div class="list"> 
   <ul>
     <li *ngFor="let place of places" [class.selected]="place.selected === true">
-      <span class="item"
+      <span class="item" title="{{ place.uri }}"
       (click)="onClick(place);">{{ place.label }}</span>
       <span *ngIf="places.hits" class="badge">{{ places.hits }}</span>
     </li>

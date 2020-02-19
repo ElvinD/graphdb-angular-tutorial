@@ -19,18 +19,9 @@ export class AbstractBaseComponent implements OnInit {
   ngOnInit() {}
 
   protected onItemSelected(items:RDFData[]):void {
-    console.log("abstract component. Items selected: ", items);
+    // console.log("abstract component. Items selected: ", items);
   }
 
   onClick(item: RDFData): void {
-    this.resetItemsStatus();
-    this.selectedItemsService.addSelectedItem(item);
   }
-  resetItemsStatus():void {
-
-  }
-
-  private emitSelection(): void {
-  }
-
 }

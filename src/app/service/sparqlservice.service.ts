@@ -98,6 +98,17 @@ export class SparqlService {
     return items;
   }
 
+  itemsContainProvinces(items:RDFData[]):boolean {
+    return items.filter (item => item.dctype  === "http://rdf.histograph.io/Province").length > 0;
+  }
+
+  itemsContainPlaces(items:RDFData[]):boolean {
+    return items.filter (item => item.dctype  === "http://rdf.histograph.io/Place").length > 0;
+  }
+
+  itemsContainPeople(items:RDFData[]):boolean {
+    return items.filter (item => item.type  === "https://w3id.org/pnv#Person").length > 0;
+  }
 
   getProvinces() {
     let query = `
@@ -111,7 +122,7 @@ export class SparqlService {
         ?residents dbo:residence ?place
         }
         group by ?uri ?label ?type ?dctype
-        order by asc(?hits)`;
+        order by desc(?hits)`;
     return this.getRDF(query).pipe(
       map(res => {
         return this.parseResults(res);
@@ -132,9 +143,33 @@ export class SparqlService {
           }
           group by ?uri ?label ?type ?province ?dctype
           order by asc(?uri)`;
-// console.log('places query: ', query);
     return this.getRDF(query).pipe(
       map(res => {
+        return this.parseResults(res);
+      }));
+  }
+
+  getPeople(fromWhere: RDFData[]) {
+    let query = `
+          ${SparqlService.PREFIXES}
+          select ?uri ?label ?firstName ?type ?infix ?surname ?place ?province where {
+            ?uri a pnv:Person ;
+            a ?type ;
+            pnv:hasName ?nameURI .
+            optional { ?nameURI pnv:literalName ?label } .
+            optional { ?nameURI pnv:firstName ?firstName } .
+            optional { ?nameURI pnv:infix ?infix } .
+            optional { ?nameURI pnv:surname ?surname } .
+            ${fromWhere.filter(item => this.itemsContainPlaces([item])).map(item => `?uri dbo:residence <${item.uri}> .`).join(' ')}
+            ?uri dbo:residence ?residence .
+            ${fromWhere.filter(item => this.itemsContainProvinces([item])).map(item => `?residence hg:liesIn <${item.uri}> .`).join(' ')}
+            ?residence hg:liesIn ?province
+          } limit 100`;
+
+          // console.log('people query: ', query);
+    return this.getRDF(query).pipe(
+      map(res => {
+        // console.log (" people results:" , res);
         return this.parseResults(res);
       }));
   }

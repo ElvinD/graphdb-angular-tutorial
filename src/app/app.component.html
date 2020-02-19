@@ -1,21 +1,18 @@
 <div style="text-align:left">
   <div class="container">
     <div class="facets">
-      <app-province-list (select)="onSelect($event)" class="province" templateRole="facet" multiSelect=false 
-        [dataChanged]="events.asObservable()"></app-province-list>
-      <app-place-list (select)="onSelect($event)" class="place" templateRole="facet" multiSelect=false 
-        [dataChanged]="events.asObservable()"></app-place-list>
+      <app-province-list class="province"></app-province-list>
+      <app-place-list class="place"></app-place-list>
     </div>
     <div class="content">
       <div class="listcontainer">
-        <app-person-list (select)="onSelect($event)" class="person" templateRole="content" multiSelect=false
-          [dataChanged]="events.asObservable()"></app-person-list>
+        <app-person-list class="person"></app-person-list>
       </div>
       <div class="detail">
         <div><span>Person Details</span></div>
-        <app-person-detail class="persondetail" templateRole="content" multiSelect=false [dataChanged]="events.asObservable()"></app-person-detail>
+        <app-person-detail class="persondetail"></app-person-detail>
         <div><span>Location</span></div>
-        <app-map class="mapdetail" templateRole="content" multiSelect=false template="mapdetail" [dataChanged]="events.asObservable()"></app-map>
+        <app-map class="mapdetail"></app-map>
       </div>
     </div>
   </div>

@@ -1,0 +1,33 @@
+.container {
+    float: left;
+    display: inline-flex;
+    width:100%;
+    max-height: 50vh;
+}
+.facets {
+    width: 20%;
+    /* font-size: small; */
+    font-weight: bold;
+}
+
+.content {
+    display: inline-flex;
+    width: 50%;
+}
+
+.content span {
+    font-weight: bold;
+    color: black;
+    margin-left: 1em;
+}
+
+.detail {
+    font-weight: bold;
+    font-size: small;
+    width:100%;
+}
+
+.listcontainer {
+    height: 200%;
+    width: 100%;
+} 

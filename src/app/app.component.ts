@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Subject } from 'rxjs';
+import { SelecteditemsService } from './service/selecteditems.service';
+import { RDFData } from './service/sparqlservice.service';
 
 @Component({
   selector: 'app-root',
@@ -8,10 +10,15 @@ import { Subject } from 'rxjs';
 })
 export class AppComponent {
   title = 'graphdb-tutorial';
-  events: Subject<any> = new Subject<any>();
 
-  onSelect(event: any) {
-    // console.log('app component received event: ', event);
-    this.events.next(event);
+  constructor(protected selectedItemsService: SelecteditemsService) {}
+
+  ngOnInit() {
+    this.selectedItemsService.$selectedItems.subscribe(items => {
+      this.onItemSelected(items);
+    })
+  }
+
+  protected onItemSelected(items:RDFData[]):void {
   }
 }
