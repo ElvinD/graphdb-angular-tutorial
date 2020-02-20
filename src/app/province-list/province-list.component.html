@@ -1,0 +1,10 @@
+<div><span class="title">Provinces</span></div>
+<div class="list"> 
+  <ul>
+    <li *ngFor="let province of provinces" [class.selected]="province.selected === true">
+      <span class="item" title="{{ province.uri }}"
+      (click)="onClick(province);">{{ province.label }}</span>
+      <span *ngIf="province.hits" class="badge">{{ province.hits }}</span>
+    </li>
+  </ul>
+</div>
