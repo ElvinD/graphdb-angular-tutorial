@@ -155,6 +155,7 @@ export class SparqlService {
           select ?uri ?label ?firstName ?type ?infix ?surname ?place ?province where {
             ?uri a pnv:Person ;
             a ?type ;
+            rdfs:label ?label ;
             pnv:hasName ?nameURI .
             optional { ?nameURI pnv:literalName ?label } .
             optional { ?nameURI pnv:firstName ?firstName } .
@@ -164,7 +165,7 @@ export class SparqlService {
             ?uri dbo:residence ?residence .
             ${fromWhere.filter(item => this.itemsContainProvinces([item])).map(item => `?residence hg:liesIn <${item.uri}> .`).join(' ')}
             ?residence hg:liesIn ?province
-          } limit 100`;
+          } limit 1000`;
 
           // console.log('people query: ', query);
     return this.getRDF(query).pipe(

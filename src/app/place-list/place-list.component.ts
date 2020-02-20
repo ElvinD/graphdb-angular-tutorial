@@ -11,39 +11,45 @@ import { SelecteditemsService } from '../service/selecteditems.service';
 export class PlaceListComponent extends AbstractBaseComponent implements OnInit {
 
   @Input() places: RDFData[];
-  
+
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
     super(sparqlService, selectedItemsService);
+    this.type = "http://rdf.histograph.io/PlaceInTime";
+    this.dctype = "http://rdf.histograph.io/Place";
   }
 
-   ngOnInit() {
-    this.selectedItemsService.$selectedItems.subscribe((items) => {
-      this.onItemSelected(items);  
-    }, () => {
-      console.log("error selecting places");
-    }, () => {
-      console.log("completed selecting items for places");    
-    })
+  ngOnInit() {
+    this.selectedItemsService.$selectedProvince.subscribe((province) => {
+      this.onItemSelected(province);
+    });
   }
-  
-  protected onItemSelected(items: RDFData[]): void {
-    if (this.sparqlService.itemsContainProvinces(items) && !this.sparqlService.itemsContainPlaces(items)) {
-      this.sparqlService.getPlaces(items).subscribe((data) => {
-        this.onPlacesLoaded(data);
-      }, () => {
-        console.log("error loading places");
-      }, () => {
-        // console.log("completed loading places");
-      });
+
+  protected onItemSelected(province: RDFData): void {
+    if (!province) {
+      console.log("no province to load", province);
+      return;
     }
+    const p = this.sparqlService.getPlaces([province]).subscribe((data) => {
+      this.onPlacesLoaded(data);
+    }, () => {
+      p.unsubscribe();
+    }, () => {
+      p.unsubscribe();
+    });
   }
-  
+
   onPlacesLoaded(data: Array<RDFData>): void {
     this.places = data;
-    // console.log("received places: " , this.places);
+    if (this.places.length)
+      this.onClick(this.places[0]);
   }
 
-  onClick(item: RDFData): void {
-    this.selectedItemsService.addSelectedItem(item);
+  onClick(place: RDFData): void {
+    if (this.selectedItemsService.selectedPlace !== place) {
+      if (this.selectedItemsService.selectedPlace)
+        this.selectedItemsService.selectedPlace.selected = false;
+      place.selected = true;
+      this.selectedItemsService.selectedPlace = place;
+    }
   }
 }

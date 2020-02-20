@@ -14,40 +14,40 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
 
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
     super(sparqlService, selectedItemsService);
+    this.type = "https://w3id.org/pnv#Person";
+    this.dctype = "undefined";
+    
   }
 
   ngOnInit() {
-    this.selectedItemsService.$selectedItems.subscribe((items) => {
-      this.onItemSelected(items);  
-    }, () => {
-      console.log("error selecting people");
-    }, () => {
-      console.log("completed selecting items for people");    
-    })
+    this.selectedItemsService.$selectedPlace.subscribe((place) => {
+      this.onItemSelected(place);
+    });
   }
 
-  protected onItemSelected(items: RDFData[]): void {
-    if (!items.length) {
-      console.log ("not loading people, no items found");
+  protected onItemSelected(place: RDFData): void {
+    if (!place) {
       return;
     }
-    if (this.sparqlService.itemsContainProvinces(items) && this.sparqlService.itemsContainPlaces(items) && !this.sparqlService.itemsContainPeople(items)) {
-      this.sparqlService.getPeople(items).subscribe((data) => {
+     const p = this.sparqlService.getPeople([place]).subscribe((data) => {
         this.onPeopleLoaded(data);
       }, () => {
-        console.log("error loading people");
+        p.unsubscribe();
       }, () => {
-        // console.log("completed loading people");
+        p.unsubscribe();
       });
-    }
   }
 
   onPeopleLoaded(data: Array<RDFData>): void {
     this.people = data;
-    console.log("received people: " , this.people);
   }
 
-  onClick(item: RDFData): void {
-    this.selectedItemsService.addSelectedItem(item);
+  onClick(person: RDFData): void {
+    if (this.selectedItemsService.selectedPerson !== person) {
+      if (this.selectedItemsService.selectedPerson)
+        this.selectedItemsService.selectedPerson.selected = false;
+      person.selected = true;
+      this.selectedItemsService.selectedPerson = person;
+    }
   }
 }

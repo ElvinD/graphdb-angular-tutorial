@@ -14,11 +14,5 @@ export class AppComponent {
   constructor(protected selectedItemsService: SelecteditemsService) {}
 
   ngOnInit() {
-    this.selectedItemsService.$selectedItems.subscribe(items => {
-      this.onItemSelected(items);
-    })
-  }
-
-  protected onItemSelected(items:RDFData[]):void {
   }
 }

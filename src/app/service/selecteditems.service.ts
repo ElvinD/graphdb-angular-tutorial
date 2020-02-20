@@ -9,43 +9,35 @@ export class SelecteditemsService {
 
   constructor() { }
 
-  private readonly _selectedItems = new BehaviorSubject<RDFData[]>([]);
-  readonly $selectedItems = this._selectedItems.asObservable();
+  private readonly _selectedProvince = new BehaviorSubject<RDFData>(null);
+  private readonly _selectedPlace = new BehaviorSubject<RDFData>(null);
+  private readonly _selectedPerson = new BehaviorSubject<RDFData>(null);
 
-  get selectedItems(): RDFData[] {
-    return this._selectedItems.getValue();
+  readonly $selectedProvince = this._selectedProvince.asObservable();
+  readonly $selectedPlace = this._selectedPlace.asObservable();
+  readonly $electedPerson = this._selectedPerson.asObservable();
+
+  get selectedProvince():RDFData {
+    return this._selectedProvince.getValue();
   }
 
-  set selectedItems(val: RDFData[]) {
-    this._selectedItems.next(val);
+  set selectedProvince(val:RDFData) {
+    this._selectedProvince.next(val);
   }
 
-  isItemSelected(selectedItem:RDFData):boolean {
-    return this.selectedItems.filter(item => item === selectedItem ).length > 0;
+  get selectedPlace():RDFData {
+    return this._selectedPlace.getValue();
   }
 
-  resetPlaces():void {
-    this.selectedItems = this.selectedItems.filter(item => item.dctype !==  "http://rdf.histograph.io/Place");
+  set selectedPlace(val:RDFData) {
+    this._selectedPlace.next(val);
   }
 
-  resetPeople():void {
-    this.selectedItems = this.selectedItems.filter(item => item.type !==  "https://w3id.org/pnv#Person");
+  get selectedPerson():RDFData {
+    return this._selectedPerson.getValue();
   }
 
-  addSelectedItem(selectedItem:RDFData):void {
-    // console.log("add selected item? ",  selectedItem);
-    
-    this.selectedItems.map(item => item.selected = false);
-    //if there are no matching items based on URI, add this item to the list of selected items
-    if (this.selectedItems.filter(item => item.uri === selectedItem.uri).length === 0) {
-      let items = this.selectedItems;
-      // no more than 1 province, if we there is a province still selected, remove it
-      items = items.filter (item => item.dctype !== selectedItem.dctype);
-      items.push(selectedItem);
-      this.selectedItems =  items;
-    } else {
-      // console.log("not adding item because already selected:" , selectedItem);
-    }
-    this.selectedItems.map(item => item.selected = true);
+  set selectedPerson(val:RDFData) {
+    this._selectedPerson.next(val);
   }
 }
