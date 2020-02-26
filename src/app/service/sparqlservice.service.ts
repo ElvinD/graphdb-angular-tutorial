@@ -88,7 +88,7 @@ export class SparqlService {
           itemsDict[rdfdata.uri] = rdfdata;
           items.push(rdfdata);
         } else {
-          // console.log('Duplicate item found: ', itemdata);
+          console.log('Duplicate item found: ', rdfdata.label);
         }
       } else {
         // console.log('Item without a name found: ', itemdata);
@@ -113,7 +113,7 @@ export class SparqlService {
   getProvinces() {
     let query = `
         ${SparqlService.PREFIXES}
-        select ?uri ?label ?type (count(?residents) as ?hits) ?dctype  where {
+        select distinct ?uri ?label ?type (count(?residents) as ?hits) ?dctype  where {
         ?uri dct:type hg:Province ;
         dct:type ?dctype ;
         rdf:type ?type ;
@@ -152,7 +152,7 @@ export class SparqlService {
   getPeople(fromWhere: RDFData[]) {
     let query = `
           ${SparqlService.PREFIXES}
-          select ?uri ?label ?firstName ?type ?infix ?surname ?place ?province where {
+          select distinct ?uri ?label ?firstName ?type ?infix ?surname ?place ?province where {
             ?uri a pnv:Person ;
             a ?type ;
             rdfs:label ?label ;
@@ -174,15 +174,144 @@ export class SparqlService {
         return this.parseResults(res);
       }));
   }
+
+  getPersonDetails(who:RDFData) {
+   let query = `
+    ${SparqlService.PREFIXES}
+    select distinct
+    ?uri ?place ?nameURI ?name ?literalName ?baseSurname
+    ?surname ?surnamePrefix ?firstName ?givenName
+    ?patronym ?prefix ?givenNameSuffix ?infix
+    ?suffix ?disambiguatingDescription ?honorificSuffixwhere
+    where {
+      <${who.uri}> dbo:residence ?place ;
+      pnv:hasName ?nameURI .
+      ?uri pnv:hasName ?nameURI .
+      ?uri dbo:residence ?place ;
+      pnv:hasName ?nameURI .
+      optional { ?nameURI pnv:literalName ?name } .
+      optional { ?nameURI pnv:literalName ?literalName } .
+      optional { ?nameURI pnv:firstName ?firstName } .
+      optional { ?nameURI pnv:infix ?infix } .
+      optional { ?nameURI pnv:baseSurname ?baseSurname } .
+      optional { ?nameURI pnv:surname ?surname } .
+      optional { ?nameURI pnv:surnamePrefix ?surnamePrefix } .
+      optional { ?nameURI pnv:givenName ?givenName } .
+      optional { ?nameURI pnv:patronym ?patronym } .
+      optional { ?nameURI pnv:prefix ?prefix } .
+      optional { ?nameURI pnv:givenNameSuffix ?givenNameSuffix } .
+      optional { ?nameURI pnv:infix ?infix } .
+      optional { ?nameURI pnv:suffix ?suffix } .
+      optional { ?nameURI pnv:disambiguatingDescription ?disambiguatingDescription } .
+      optional { ?nameURI pnv:honorificSuffixwhere ?honorificSuffixwhere }
+  }
+  `;
+  return this.getRDF(query).pipe(
+    map(res => {
+      // console.log (" people results:" , res);
+      return this.parsePersonDetailResults(res);
+    }));
+  }
+
+  protected parsePersonDetailResults(results: any): PersonData {
+    console.log('person results: ', results);
+    let resultData: any;
+    const tempDict: { [uri: string]: PersonData } = {};
+    const itemsDict: { [uri: string]: PersonData } = {};
+    let person: PersonData;
+    let key: string;
+    let label: string;
+    let nameURI: string;
+    for (let i = 0; i < results['results']['bindings'].length; i++) {
+      resultData = results['results']['bindings'][i];
+      key = resultData['uri'] ? resultData['uri']['value'] : null;
+      label = resultData['label'] ? resultData['label']['value'] : null;
+      nameURI = resultData['nameURI'] ? resultData['nameURI']['value'] : null;
+      if (null == tempDict[key]) {
+        person = new PersonData();
+        tempDict[key] = person;
+      } else {
+        person = tempDict[key];
+      }
+      if (nameURI !== null) {
+        person.hasName[nameURI] = new PersonNameData();
+        person.hasName[nameURI].baseSurname = resultData['baseSurname'] ? resultData['baseSurname']['value'] : null;
+        person.hasName[nameURI].prefix = resultData['prefix'] ? resultData['prefix']['value'] : null;
+        person.hasName[nameURI].literalName = resultData['literalName'] ? resultData['literalName']['value'] : null;
+        person.hasName[nameURI].firstName = resultData['firstName'] ? resultData['firstName']['value'] : null;
+        person.hasName[nameURI].givenName = resultData['givenName'] ? resultData['givenName']['value'] : null;
+        person.hasName[nameURI].surname = resultData['surname'] ? resultData['surname']['value'] : null;
+        person.hasName[nameURI].surnamePrefix = resultData['surnamePrefix'] ? resultData['surnamePrefix']['value'] : null;
+        person.hasName[nameURI].patronym = resultData['patronym'] ? resultData['patronym']['value'] : null;
+        person.hasName[nameURI].trailingPatronym = resultData['trailingPatronym'] ? resultData['trailingPatronym']['value'] : null;
+        person.hasName[nameURI].givenNameSuffix = resultData['givenNameSuffix'] ? resultData['givenNameSuffix']['value'] : null;
+        person.hasName[nameURI].infix = resultData['infix'] ? resultData['infix']['value'] : null;
+        person.hasName[nameURI].infixTitle = resultData['infixTitle'] ? resultData['infixTitle']['value'] : null;
+        person.hasName[nameURI].suffix = resultData['suffix'] ? resultData['suffix']['value'] : null;
+        person.hasName[nameURI].disambiguatingDescription = resultData['disambiguatingDescription'] ?
+          resultData['disambiguatingDescription']['value'] : null;
+        person.hasName[nameURI].honorificSuffix = resultData['honorificSuffix'] ? resultData['baseShonorificSuffixurname']['value'] : null;
+      }
+      person.uri = key;
+      person.label = name;
+      if (person.label && person.label !== '') {
+        if (itemsDict[person.uri] == null) {
+          itemsDict[person.uri] = person;
+        } else {
+          // console.log('Duplicate item found: ', person);
+        }
+      } else {
+        // console.log('Item without a name found: ', person);
+      }
+    }
+    return person;
+  }
 }
+
 
 export class RDFData {
   label: string;
   uri: string;
   type: string;
   dctype: string;
-  template: string;
-  templateRole: string;
   hits?: number;
   selected = false;
+}
+
+export class PersonData extends RDFData {
+  hasName: { [uri: string]: PersonNameData } = {};
+
+  getName(key?: string): PersonNameData {
+    let name = null;
+    if (key) {
+      if (null !== this.hasName[key]) {
+        name = this.hasName[key];
+      }
+    } else {
+      for (const ukey in this.hasName) {
+        if (null !== this.hasName[ukey]) {
+          return this.hasName[ukey];
+        }
+      }
+    }
+    return name;
+  }
+}
+
+export class PersonNameData {
+  prefix: string = null;
+  literalName: string = null;
+  firstName: string = null;
+  givenName: string = null;
+  baseSurname: string = null;
+  surname: string = null;
+  surnamePrefix: string = null;
+  patronym: string = null;
+  trailingPatronym: string = null;
+  givenNameSuffix: string = null;
+  infix: string = null;
+  infixTitle: string = null;
+  suffix: string = null;
+  disambiguatingDescription: string = null;
+  honorificSuffix: string = null;
 }
