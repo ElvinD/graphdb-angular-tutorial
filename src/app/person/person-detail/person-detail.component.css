@@ -1,0 +1,21 @@
+.personcontent {
+    max-height: 80%;
+    width: 90%;
+    display: inline-block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    vertical-align: top;
+    margin: 0.8em;
+    color: darkorange;
+    font-weight: bold;
+    border: lightgray;
+    border-width: medium;
+    border-style: solid;
+    border-radius: 4px;
+    padding: 1em;
+}
+
+.personcontent span {
+    font-weight: initial;
+    color: darkslategray;
+}

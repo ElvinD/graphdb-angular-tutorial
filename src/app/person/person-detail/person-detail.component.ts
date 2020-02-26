@@ -36,7 +36,7 @@ export class PersonDetailComponent extends AbstractBaseComponent implements OnIn
   }
 
   onPersonLoaded(data: PersonData): void {
-    console.log("retrieved person details:", data);
+    // console.log("retrieved person details:", data);
     this.persondata = data;
   }
 }

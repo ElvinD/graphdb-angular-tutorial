@@ -222,11 +222,13 @@ export class SparqlService {
     let key: string;
     let label: string;
     let nameURI: string;
+    let placeURI: string; 
     for (let i = 0; i < results['results']['bindings'].length; i++) {
       resultData = results['results']['bindings'][i];
       key = resultData['uri'] ? resultData['uri']['value'] : null;
       label = resultData['label'] ? resultData['label']['value'] : null;
       nameURI = resultData['nameURI'] ? resultData['nameURI']['value'] : null;
+      placeURI = resultData['place'] ? resultData['place']['value'] : null;
       if (null == tempDict[key]) {
         person = new PersonData();
         tempDict[key] = person;
@@ -254,6 +256,7 @@ export class SparqlService {
       }
       person.uri = key;
       person.label = name;
+      person.residence = placeURI;
       if (person.label && person.label !== '') {
         if (itemsDict[person.uri] == null) {
           itemsDict[person.uri] = person;
@@ -280,6 +283,7 @@ export class RDFData {
 
 export class PersonData extends RDFData {
   hasName: { [uri: string]: PersonNameData } = {};
+  residence: string;
 
   getName(key?: string): PersonNameData {
     let name = null;
