@@ -13,10 +13,6 @@ export class AbstractBaseComponent implements OnInit {
   @Input() dataChanged: Observable<any>;
   @Output() select: EventEmitter<RDFData[]> = new EventEmitter();
 
-  protected dctype: string;
-  protected type: string;
-
-  
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) { }
 
   ngOnInit() {}
