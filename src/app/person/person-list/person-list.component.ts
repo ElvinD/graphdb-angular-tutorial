@@ -16,7 +16,6 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
     super(sparqlService, selectedItemsService);
     this.type = "https://w3id.org/pnv#Person";
     this.dctype = "undefined";
-    
   }
 
   ngOnInit() {
@@ -40,6 +39,8 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
 
   onPeopleLoaded(data: Array<RDFData>): void {
     this.people = data;
+    if (this.people.length)
+      this.onClick(this.people[0]);
   }
 
   onClick(person: RDFData): void {

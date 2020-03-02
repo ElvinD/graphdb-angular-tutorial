@@ -15,7 +15,7 @@ export class SelecteditemsService {
 
   readonly $selectedProvince = this._selectedProvince.asObservable();
   readonly $selectedPlace = this._selectedPlace.asObservable();
-  readonly $electedPerson = this._selectedPerson.asObservable();
+  readonly $selectedPerson = this._selectedPerson.asObservable();
 
   get selectedProvince():RDFData {
     return this._selectedProvince.getValue();

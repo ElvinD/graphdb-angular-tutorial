@@ -1,1 +1,17 @@
-<p>person-detail works!</p>
+<div *ngIf="persondata&&persondata.getName()" class="personcontent">
+    <div *ngIf="persondata.getName().literalName"><span>Full name: </span>{{persondata.getName().literalName}}</div>
+    <div *ngIf="persondata.getName().infixTitle"><span>Infix title: </span>{{persondata.getName().infixTitle}}</div>
+    <div *ngIf="persondata.getName().prefix"><span>Prefix: </span>{{persondata.getName().prefix}}</div>
+    <div *ngIf="persondata.getName().givenNameSuffix"><span>Given name suffix: </span>{{persondata.getName().givenNameSuffix}}</div>
+    <div *ngIf="persondata.getName().givenName"><span>Given name: </span>{{persondata.getName().givenName}}</div>
+    <div *ngIf="persondata.getName().firstName"><span>First name: </span>{{persondata.getName().firstName}}</div>
+    <div *ngIf="persondata.getName().infix"><span>Infix: </span>{{persondata.getName().infix}}</div>
+    <div *ngIf="persondata.getName().baseSurname"><span>Base surname: </span>{{persondata.getName().baseSurname}}</div>
+    <div *ngIf="persondata.getName().surnamePrefix"><span>Surname prefix: </span>{{persondata.getName().surnamePrefix}}</div>
+    <div *ngIf="persondata.getName().surname"><span>Surname: </span>{{persondata.getName().surname}}</div>
+    <div *ngIf="persondata.getName().patronym"><span>Patronym: </span>{{persondata.getName().patronym}}</div>
+    <div *ngIf="persondata.getName().trailingPatronym"><span>Trailing patronym: </span>{{persondata.getName().trailingPatronym}}</div>
+    <div *ngIf="persondata.getName().suffix"><span>Suffix: </span>{{persondata.getName().suffix}}</div>
+    <div *ngIf="persondata.getName().disambiguatingDescription"><span>Disambiguating description: </span>{{persondata.getName().disambiguatingDescription}}</div>
+    <div *ngIf="persondata.getName().honorificSuffix"><span>Honorific suffix: </span>{{persondata.getName().honorificSuffix}}</div>
+  </div>
