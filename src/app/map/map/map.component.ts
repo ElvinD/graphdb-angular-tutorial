@@ -4,7 +4,6 @@ import { Map, tileLayer, latLng } from 'leaflet';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
 import { SelecteditemsService } from 'src/app/service/selecteditems.service';
 import { SearchService } from 'src/app/service/search.service';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 
 declare let L;

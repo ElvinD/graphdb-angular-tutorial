@@ -14,8 +14,6 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
 
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
     super(sparqlService, selectedItemsService);
-    this.type = "http://rdf.histograph.io/PlaceInTime";
-    this.dctype = "http://rdf.histograph.io/Province";
   }
 
   ngOnInit() {

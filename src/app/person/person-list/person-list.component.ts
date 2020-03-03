@@ -14,8 +14,6 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
 
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
     super(sparqlService, selectedItemsService);
-    this.type = "https://w3id.org/pnv#Person";
-    this.dctype = "undefined";
   }
 
   ngOnInit() {
