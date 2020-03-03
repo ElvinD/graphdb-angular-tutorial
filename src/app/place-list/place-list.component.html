@@ -1,0 +1,10 @@
+<div><span class="title">Places</span></div>
+<div class="list"> 
+  <ul>
+    <li *ngFor="let place of places" [class.selected]="place.selected === true">
+      <span class="item" title="{{ place.uri }}"
+      (click)="onClick(place);">{{ place.label }}</span>
+      <span *ngIf="place.hits" class="badge">{{ place.hits }}</span>
+    </li>
+  </ul>
+</div>
