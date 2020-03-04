@@ -24,7 +24,7 @@ export class PlaceListComponent extends AbstractBaseComponent implements OnInit 
 
   protected onItemSelected(province: RDFData): void {
     if (!province) {
-      console.log("no province to load", province);
+      console.log('no province to load', province);
       return;
     }
     const p = this.sparqlService.getPlaces([province]).subscribe((data) => {
@@ -38,14 +38,16 @@ export class PlaceListComponent extends AbstractBaseComponent implements OnInit 
 
   onPlacesLoaded(data: Array<RDFData>): void {
     this.places = data;
-    if (this.places.length)
+    if (this.places.length) {
       this.onClick(this.places[0]);
+    }
   }
 
   onClick(place: RDFData): void {
     if (this.selectedItemsService.selectedPlace !== place) {
-      if (this.selectedItemsService.selectedPlace)
+      if (this.selectedItemsService.selectedPlace) {
         this.selectedItemsService.selectedPlace.selected = false;
+      }
       place.selected = true;
       this.selectedItemsService.selectedPlace = place;
     }

@@ -20,7 +20,7 @@ export class SearchService {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       }),
-      params: params
+      params
     };
     return this.http.get<any>(this.serviceURL, options).pipe(
       catchError(this.handleError('search ', []))

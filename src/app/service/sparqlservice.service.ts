@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { catchError, tap, map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +31,9 @@ export class SparqlService {
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Accept': 'application/sparql-results+json'
+        Accept: 'application/sparql-results+json'
       }),
-      params: params
+      params
     };
     return this.http.get<any>(this.serviceURL, options).pipe(
       catchError(this.handleError('getRDF', []))
@@ -65,13 +65,12 @@ export class SparqlService {
     let hits: number;
     let type: string;
     let dctype: string;
-    for (let i = 0; i < results['results']['bindings'].length; i++) {
-      resultData = results['results']['bindings'][i];
-      key = resultData['uri'] ? resultData['uri']['value'] : null;
-      label = resultData['label'] ? resultData['label']['value'] : null;
-      hits = resultData['hits'] ? resultData['hits']['value'] : null;
-      type = resultData['type'] ? resultData['type']['value'] : null;
-      dctype = resultData['dctype'] ? resultData['dctype']['value'] : null;
+    for (resultData of results.results.bindings) {
+      key = resultData.uri ? resultData.uri.value : null;
+      label = resultData.label ? resultData.label.value : null;
+      hits = resultData.hits ? resultData.hits.value : null;
+      type = resultData.type ? resultData.type.value : null;
+      dctype = resultData.dctype ? resultData.dctype.value : null;
       if (null == tempDict[key]) {
         rdfdata = new RDFData();
         tempDict[key] = rdfdata;
@@ -94,24 +93,24 @@ export class SparqlService {
         // console.log('Item without a name found: ', itemdata);
       }
     }
-    // console.log("results from loading: ", results);
+    console.log('results from loading: ', results);
     return items;
   }
 
-  itemsContainProvinces(items:RDFData[]):boolean {
-    return items.filter (item => item.dctype  === "http://rdf.histograph.io/Province").length > 0;
+  itemsContainProvinces(items: RDFData[]): boolean {
+    return items.filter (item => item.dctype  === 'http://rdf.histograph.io/Province').length > 0;
   }
 
-  itemsContainPlaces(items:RDFData[]):boolean {
-    return items.filter (item => item.dctype  === "http://rdf.histograph.io/Place").length > 0;
+  itemsContainPlaces(items: RDFData[]): boolean {
+    return items.filter (item => item.dctype  === 'http://rdf.histograph.io/Place').length > 0;
   }
 
-  itemsContainPeople(items:RDFData[]):boolean {
-    return items.filter (item => item.type  === "https://w3id.org/pnv#Person").length > 0;
+  itemsContainPeople(items: RDFData[]): boolean {
+    return items.filter (item => item.type  === 'https://w3id.org/pnv#Person').length > 0;
   }
 
   getProvinces() {
-    let query = `
+    const query = `
         ${SparqlService.PREFIXES}
         select distinct ?uri ?label ?type (count(?residents) as ?hits) ?dctype  where {
         ?uri dct:type hg:Province ;
@@ -130,7 +129,7 @@ export class SparqlService {
   }
 
   getPlaces(provinces: RDFData[]) {
-    let query = `
+    const query = `
           ${SparqlService.PREFIXES}
           select distinct ?uri ?label ?type (count(?residents) as ?hits) ?province ?dctype where {
             ?uri dct:type hg:Place ;
@@ -139,7 +138,7 @@ export class SparqlService {
             rdfs:label ?label .
             ?residents dbo:residence ?uri .
             ${provinces.map(province => `?uri hg:liesIn <${province.uri}> .`).join(' ')}
-            
+
           }
           group by ?uri ?label ?type ?province ?dctype
           order by asc(?uri)`;
@@ -150,7 +149,7 @@ export class SparqlService {
   }
 
   getPeople(fromWhere: RDFData[]) {
-    let query = `
+    const query = `
           ${SparqlService.PREFIXES}
           select distinct ?uri ?label ?firstName ?type ?infix ?surname ?place ?province where {
             ?uri a pnv:Person ;
@@ -175,8 +174,8 @@ export class SparqlService {
       }));
   }
 
-  getPersonDetails(who:RDFData) {
-   let query = `
+  getPersonDetails(who: RDFData) {
+   const query = `
     ${SparqlService.PREFIXES}
     select distinct
     ?uri ?place ?nameURI ?name ?literalName ?baseSurname
@@ -206,7 +205,7 @@ export class SparqlService {
       optional { ?nameURI pnv:honorificSuffixwhere ?honorificSuffixwhere }
   }
   `;
-  return this.getRDF(query).pipe(
+   return this.getRDF(query).pipe(
     map(res => {
       // console.log (" people results:" , res);
       return this.parsePersonDetailResults(res);
@@ -222,13 +221,12 @@ export class SparqlService {
     let key: string;
     let label: string;
     let nameURI: string;
-    let placeURI: string; 
-    for (let i = 0; i < results['results']['bindings'].length; i++) {
-      resultData = results['results']['bindings'][i];
-      key = resultData['uri'] ? resultData['uri']['value'] : null;
-      label = resultData['label'] ? resultData['label']['value'] : null;
-      nameURI = resultData['nameURI'] ? resultData['nameURI']['value'] : null;
-      placeURI = resultData['place'] ? resultData['place']['value'] : null;
+    let placeURI: string;
+    for (resultData of results.results.bindings) {
+      key = resultData.uri ? resultData.uri.value : null;
+      label = resultData.label ? resultData.label.value : null;
+      nameURI = resultData.nameURI ? resultData.nameURI.value : null;
+      placeURI = resultData.place ? resultData.place.value : null;
       if (null == tempDict[key]) {
         person = new PersonData();
         tempDict[key] = person;
@@ -237,22 +235,22 @@ export class SparqlService {
       }
       if (nameURI !== null) {
         person.hasName[nameURI] = new PersonNameData();
-        person.hasName[nameURI].baseSurname = resultData['baseSurname'] ? resultData['baseSurname']['value'] : null;
-        person.hasName[nameURI].prefix = resultData['prefix'] ? resultData['prefix']['value'] : null;
-        person.hasName[nameURI].literalName = resultData['literalName'] ? resultData['literalName']['value'] : null;
-        person.hasName[nameURI].firstName = resultData['firstName'] ? resultData['firstName']['value'] : null;
-        person.hasName[nameURI].givenName = resultData['givenName'] ? resultData['givenName']['value'] : null;
-        person.hasName[nameURI].surname = resultData['surname'] ? resultData['surname']['value'] : null;
-        person.hasName[nameURI].surnamePrefix = resultData['surnamePrefix'] ? resultData['surnamePrefix']['value'] : null;
-        person.hasName[nameURI].patronym = resultData['patronym'] ? resultData['patronym']['value'] : null;
-        person.hasName[nameURI].trailingPatronym = resultData['trailingPatronym'] ? resultData['trailingPatronym']['value'] : null;
-        person.hasName[nameURI].givenNameSuffix = resultData['givenNameSuffix'] ? resultData['givenNameSuffix']['value'] : null;
-        person.hasName[nameURI].infix = resultData['infix'] ? resultData['infix']['value'] : null;
-        person.hasName[nameURI].infixTitle = resultData['infixTitle'] ? resultData['infixTitle']['value'] : null;
-        person.hasName[nameURI].suffix = resultData['suffix'] ? resultData['suffix']['value'] : null;
-        person.hasName[nameURI].disambiguatingDescription = resultData['disambiguatingDescription'] ?
-          resultData['disambiguatingDescription']['value'] : null;
-        person.hasName[nameURI].honorificSuffix = resultData['honorificSuffix'] ? resultData['baseShonorificSuffixurname']['value'] : null;
+        person.hasName[nameURI].baseSurname = resultData.baseSurname ? resultData.baseSurname.value : null;
+        person.hasName[nameURI].prefix = resultData.prefix ? resultData.prefix.value : null;
+        person.hasName[nameURI].literalName = resultData.literalName ? resultData.literalName.value : null;
+        person.hasName[nameURI].firstName = resultData.firstName ? resultData.firstName.value : null;
+        person.hasName[nameURI].givenName = resultData.givenName ? resultData.givenName.value : null;
+        person.hasName[nameURI].surname = resultData.surname ? resultData.surname.value : null;
+        person.hasName[nameURI].surnamePrefix = resultData.surnamePrefix ? resultData.surnamePrefix.value : null;
+        person.hasName[nameURI].patronym = resultData.patronym ? resultData.patronym.value : null;
+        person.hasName[nameURI].trailingPatronym = resultData.trailingPatronym ? resultData.trailingPatronym.value : null;
+        person.hasName[nameURI].givenNameSuffix = resultData.givenNameSuffix ? resultData.givenNameSuffix.value : null;
+        person.hasName[nameURI].infix = resultData.infix ? resultData.infix.value : null;
+        person.hasName[nameURI].infixTitle = resultData.infixTitle ? resultData.infixTitle.value : null;
+        person.hasName[nameURI].suffix = resultData.suffix ? resultData.suffix.value : null;
+        person.hasName[nameURI].disambiguatingDescription = resultData.disambiguatingDescription ?
+          resultData.disambiguatingDescription.value : null;
+        person.hasName[nameURI].honorificSuffix = resultData.honorificSuffix ? resultData.baseShonorificSuffixurname.value : null;
       }
       person.uri = key;
       person.label = name;

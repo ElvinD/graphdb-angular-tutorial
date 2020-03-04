@@ -26,7 +26,7 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
     if (!place) {
       return;
     }
-     const p = this.sparqlService.getPeople([place]).subscribe((data) => {
+    const p = this.sparqlService.getPeople([place]).subscribe((data) => {
         this.onPeopleLoaded(data);
       }, () => {
         p.unsubscribe();
@@ -37,14 +37,16 @@ export class PersonListComponent extends AbstractBaseComponent implements OnInit
 
   onPeopleLoaded(data: Array<RDFData>): void {
     this.people = data;
-    if (this.people.length)
+    if (this.people.length) {
       this.onClick(this.people[0]);
+    }
   }
 
   onClick(person: RDFData): void {
     if (this.selectedItemsService.selectedPerson !== person) {
-      if (this.selectedItemsService.selectedPerson)
+      if (this.selectedItemsService.selectedPerson) {
         this.selectedItemsService.selectedPerson.selected = false;
+      }
       person.selected = true;
       this.selectedItemsService.selectedPerson = person;
     }

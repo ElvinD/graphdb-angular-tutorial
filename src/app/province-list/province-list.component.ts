@@ -38,8 +38,9 @@ export class ProvinceListComponent extends AbstractBaseComponent implements OnIn
 
   onClick(province: RDFData): void {
     if (this.selectedItemsService.selectedProvince !== province) {
-      if (this.selectedItemsService.selectedProvince)
+      if (this.selectedItemsService.selectedProvince) {
             this.selectedItemsService.selectedProvince.selected = false;
+      }
       province.selected = true;
       this.selectedItemsService.selectedProvince = province;
     }
