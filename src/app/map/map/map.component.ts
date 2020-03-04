@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewChecked } from '@angular/core';
 import { AbstractBaseComponent } from 'src/app/base/abstractbase.component';
 import { Map, tileLayer, latLng } from 'leaflet';
 import { SparqlService, RDFData } from 'src/app/service/sparqlservice.service';
@@ -13,7 +13,7 @@ declare let L;
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent extends AbstractBaseComponent implements OnInit {
+export class MapComponent extends AbstractBaseComponent implements OnInit, AfterViewChecked {
 
   map: Map;
   province: string = null;
@@ -36,9 +36,9 @@ export class MapComponent extends AbstractBaseComponent implements OnInit {
     center: latLng([52.08095165, 5.12768031549829])
   };
 
-  constructor(protected sparqlService: SparqlService, 
-    protected selectedItemsService: SelecteditemsService,
-    protected searchService: SearchService) {
+  constructor(protected sparqlService: SparqlService,
+              protected selectedItemsService: SelecteditemsService,
+              protected searchService: SearchService) {
     super(sparqlService, selectedItemsService);
   }
 
@@ -51,14 +51,14 @@ export class MapComponent extends AbstractBaseComponent implements OnInit {
     });
   }
 
-  protected onItemSelected(item:RDFData):void {
+  protected onItemSelected(item: RDFData): void {
     if (item) {
-      if (item.type === "http://rdf.histograph.io/PlaceInTime") {
+      if (item.type === 'http://rdf.histograph.io/PlaceInTime') {
         switch (item.dctype) {
-          case "http://rdf.histograph.io/Place":
+          case 'http://rdf.histograph.io/Place':
             this.place = item.label;
             break;
-          case "http://rdf.histograph.io/Province":
+          case 'http://rdf.histograph.io/Province':
             this.province = item.label;
             break;
         }
@@ -84,9 +84,9 @@ export class MapComponent extends AbstractBaseComponent implements OnInit {
     this.searchService.search(query).subscribe(data => {
       if (data.length) {
         const coords = data[0];
-        if (coords['lat'] && coords['lon']) {
-          const lat: number = coords['lat'];
-          const lon: number = coords['lon'];
+        if (coords[`lat`] && coords[`lon`]) {
+          const lat: number = coords[`lat`];
+          const lon: number = coords[`lon`];
           // console.log('retreived cords: ', lon , lat);
           let zoom = 10;
           if (this.place) {

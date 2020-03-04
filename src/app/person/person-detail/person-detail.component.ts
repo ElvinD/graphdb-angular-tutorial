@@ -10,8 +10,8 @@ import { SelecteditemsService } from 'src/app/service/selecteditems.service';
 })
 export class PersonDetailComponent extends AbstractBaseComponent implements OnInit {
 
-  persondata:PersonData;
-  
+  persondata: PersonData;
+
   constructor(protected sparqlService: SparqlService, protected selectedItemsService: SelecteditemsService) {
     super(sparqlService, selectedItemsService);
   }
@@ -26,7 +26,7 @@ export class PersonDetailComponent extends AbstractBaseComponent implements OnIn
     if (!person) {
       return;
     }
-     const p = this.sparqlService.getPersonDetails(person).subscribe((data) => {
+    const p = this.sparqlService.getPersonDetails(person).subscribe((data) => {
         this.onPersonLoaded(data);
       }, () => {
         p.unsubscribe();
