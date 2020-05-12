@@ -1,5 +1,6 @@
 # GraphdbTutorial
 Please refer to my articles on Medium for detailed walkthroughs of this project.
+
 Part 1: https://medium.com/@elvin.dechesne/using-ontotext-and-graphdb-to-power-an-angular-app-part-1-b9483731acba
 
 Part 2: https://medium.com/@elvin.dechesne/using-ontotext-and-graphdb-to-power-an-angular-app-part-2-6fa9d39629d6
